@@ -1,0 +1,5 @@
+CREATE TABLE `counter` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`value` integer DEFAULT 0 NOT NULL,
+	`updated_at` text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL
+);
