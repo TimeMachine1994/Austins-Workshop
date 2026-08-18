@@ -25,8 +25,9 @@ src/lib/ui/
 2. **No app imports.** A `ui/` component must never import from
    `$lib/apps/*`. Data comes in via props/snippets; app logic stays in the app.
 3. **Catalog every component.** Each component gets a `catalog.ts` entry
-   recording its origin app. The catalog will power a future hidden
-   `/apps/gallery` reference page.
+   recording its origin app. The catalog powers the hidden `/apps/gallery`
+   reference page — when adding a component, also wire a demo snippet into
+   `src/routes/apps/gallery/+page.svelte`.
 4. **Promote, don't preempt.** Components start in their origin-app folder;
    move them to `shared/` only once a second app actually uses them.
    Don't extract app-specific components (e.g. the screenplay editor) at all.

@@ -33,6 +33,13 @@ export const apps: AppEntry[] = [
 		icon: '🎬'
 	},
 	{
+		slug: 'gallery',
+		title: 'Gallery',
+		description: 'Living reference of every component in the $lib/ui library, rendered under the active theme.',
+		icon: '🧩',
+		hidden: true
+	},
+	{
 		slug: 'admin',
 		title: 'Admin',
 		description: 'Command center: browse and manage every app\u2019s data.',

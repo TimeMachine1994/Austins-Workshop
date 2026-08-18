@@ -3,8 +3,9 @@
  * src/lib/ui/, organized by the app it originated in.
  *
  * Every component added to the library MUST get an entry here. This typed
- * catalog is the source of truth a future hidden /apps/gallery route will
- * render (every component, every variant, under every theme).
+ * catalog is the source of truth the hidden /apps/gallery route renders
+ * (every component, live, under the active theme) — new components also
+ * need a demo snippet wired up on that page.
  *
  * Folder convention:
  *   src/lib/ui/<originApp>/  — components born in that app (workshop = portal shell)

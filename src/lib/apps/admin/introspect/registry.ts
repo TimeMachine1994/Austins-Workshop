@@ -17,29 +17,31 @@ export type VirtualDb = {
 };
 
 /**
- * Every registered app except `admin` itself, exposed as a "virtual database"
- * with a lazy getter for its raw libSQL client (bypassing the drizzle wrapper
- * and any per-app schema, so this stays fully generic).
+ * Every registered app except `admin` itself that actually has a database
+ * (a db/client.ts module), exposed as a "virtual database" with a lazy getter
+ * for its raw libSQL client (bypassing the drizzle wrapper and any per-app
+ * schema, so this stays fully generic). Db-less apps (e.g. `gallery`) are
+ * skipped.
  */
 export function listVirtualDbs(): VirtualDb[] {
 	return apps
 		.filter((app) => app.slug !== 'admin')
-		.map((app) => {
+		.flatMap((app) => {
 			const path = `/src/lib/apps/${app.slug}/db/client.ts`;
 			const importModule = clientModules[path];
+			if (!importModule) return [];
 
-			return {
-				slug: app.slug,
-				title: app.title,
-				description: app.description,
-				getClient: async () => {
-					if (!importModule) {
-						throw new Error(`No db client module found for app "${app.slug}" at ${path}`);
+			return [
+				{
+					slug: app.slug,
+					title: app.title,
+					description: app.description,
+					getClient: async () => {
+						const mod = await importModule();
+						return mod.db.$client;
 					}
-					const mod = await importModule();
-					return mod.db.$client;
 				}
-			};
+			];
 		});
 }
 
