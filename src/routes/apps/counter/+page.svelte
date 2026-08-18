@@ -1,31 +1,22 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { Button } from '$lib/ui';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 </script>
 
-<h1 class="mb-2 text-2xl font-semibold text-white">Counter</h1>
-<p class="mb-6 text-neutral-400">
-	Value persisted in its own libSQL database at <code class="text-neutral-300">data/counter.db</code>.
+<h1 class="mb-2 text-2xl font-semibold text-ink">Counter</h1>
+<p class="mb-6 text-ink-muted">
+	Value persisted in its own libSQL database at <code class="text-ink">data/counter.db</code>.
 </p>
 
 <div class="flex items-center gap-4">
-	<span class="text-5xl font-bold text-white">{data.value}</span>
+	<span class="text-5xl font-bold text-ink">{data.value}</span>
 	<form method="POST" action="?/increment" use:enhance>
-		<button
-			type="submit"
-			class="rounded-lg bg-white px-4 py-2 font-medium text-neutral-900 hover:bg-neutral-200"
-		>
-			Increment
-		</button>
+		<Button type="submit" variant="primary">Increment</Button>
 	</form>
 	<form method="POST" action="?/reset" use:enhance>
-		<button
-			type="submit"
-			class="rounded-lg border border-neutral-700 px-4 py-2 font-medium text-neutral-300 hover:border-neutral-500"
-		>
-			Reset
-		</button>
+		<Button type="submit" variant="secondary">Reset</Button>
 	</form>
 </div>

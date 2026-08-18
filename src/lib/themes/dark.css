@@ -1,0 +1,76 @@
+/*
+ * Dark theme — "haxor": terminal-phosphor green on near-black,
+ * green-tinted neutrals throughout.
+ *
+ * The variable block appears twice on purpose: once for an explicit
+ * [data-theme='dark'] choice, once inside the prefers-color-scheme media
+ * query for [data-theme='system']. Keeping each theme file self-contained
+ * beats clever indirection here — if you edit one block, edit both.
+ */
+:root[data-theme='dark'] {
+	color-scheme: dark;
+
+	/* Surfaces */
+	--surface: #050807;
+	--panel: #0c110e;
+	--panel-hover: #141b17;
+
+	/* Text */
+	--ink: #e6f0ea;
+	--ink-muted: #8fa39a;
+	--ink-faint: #5c6b64;
+
+	/* Borders */
+	--edge: #1c2620;
+	--edge-strong: #3a4a41;
+
+	/* Accent — phosphor green, dark ink on it like a terminal cursor */
+	--accent: #00e07f;
+	--accent-hover: #38ffa5;
+	--on-accent: #04150c;
+
+	/* Danger */
+	--danger: #ff5d5d;
+	--danger-hover: #ff8585;
+	--danger-panel: #2a0d0d;
+	--danger-edge: #7a2020;
+
+	/* Warning */
+	--warn: #ffd166;
+	--warn-panel: #2a2108;
+	--warn-edge: #7a611f;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root[data-theme='system'] {
+		/* Surfaces */
+		--surface: #050807;
+		--panel: #0c110e;
+		--panel-hover: #141b17;
+
+		/* Text */
+		--ink: #e6f0ea;
+		--ink-muted: #8fa39a;
+		--ink-faint: #5c6b64;
+
+		/* Borders */
+		--edge: #1c2620;
+		--edge-strong: #3a4a41;
+
+		/* Accent — phosphor green, dark ink on it like a terminal cursor */
+		--accent: #00e07f;
+		--accent-hover: #38ffa5;
+		--on-accent: #04150c;
+
+		/* Danger */
+		--danger: #ff5d5d;
+		--danger-hover: #ff8585;
+		--danger-panel: #2a0d0d;
+		--danger-edge: #7a2020;
+
+		/* Warning */
+		--warn: #ffd166;
+		--warn-panel: #2a2108;
+		--warn-edge: #7a611f;
+	}
+}

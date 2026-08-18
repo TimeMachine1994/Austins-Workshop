@@ -53,7 +53,8 @@ password in its own `data/admin.db` — there is no public signup page.
 
 Locally, each app's `db/client.ts` points at a local file
 (`file:data/<slug>.db`). When ready to go live, create a Turso database per
-app and set that app's `<SLUG>_DATABASE_URL` / `<SLUG>_AUTH_TOKEN` env vars —
+app and set that app's `<SLUG>_DATABASE_URL` / `<SLUG>_AUTH_TOKEN` env vars
+(e.g. `COUNTER_DATABASE_URL`, `SCREENWRITER_DATABASE_URL`, ...) —
 `db/client.ts` already reads from `process.env` first, so **no code changes**
 are needed to switch from local dev to Turso.
 

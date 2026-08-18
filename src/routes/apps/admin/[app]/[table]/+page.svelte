@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { Button } from '$lib/ui';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -19,38 +20,35 @@
 </script>
 
 <p class="mb-2 text-sm">
-	<a href={`/apps/admin/${data.app.slug}`} class="text-neutral-400 hover:text-white">
+	<a href={`/apps/admin/${data.app.slug}`} class="text-ink-muted hover:text-ink">
 		&larr; {data.app.title}
 	</a>
 </p>
 <div class="mb-6 flex items-center justify-between">
-	<h1 class="text-2xl font-semibold text-white">
+	<h1 class="text-2xl font-semibold text-ink">
 		<span class="font-mono">{data.table.name}</span>
 	</h1>
 	{#if !data.table.hasCompositeKey}
-		<a
-			href={`/apps/admin/${data.app.slug}/${data.table.name}/new`}
-			class="rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-900 hover:bg-neutral-200"
-		>
+		<Button href={`/apps/admin/${data.app.slug}/${data.table.name}/new`} variant="primary">
 			+ New Row
-		</a>
+		</Button>
 	{/if}
 </div>
 
 {#if data.table.hasCompositeKey}
-	<p class="mb-4 rounded border border-amber-800 bg-amber-950 px-3 py-2 text-sm text-amber-300">
+	<p class="mb-4 rounded-lg border border-warn-edge bg-warn-panel px-3 py-2 text-sm text-warn">
 		This table has a composite primary key. Editing/deleting rows isn't supported yet -- showing
 		read-only data.
 	</p>
 {/if}
 
-<div class="overflow-x-auto rounded-xl border border-neutral-800">
+<div class="overflow-x-auto rounded-xl border border-edge">
 	<table class="w-full text-left text-sm">
-		<thead class="bg-neutral-900 text-neutral-400">
+		<thead class="bg-panel text-ink-muted">
 			<tr>
 				{#each data.table.columns as column (column.name)}
 					<th class="px-4 py-2 font-medium">
-						<a href={sortHref(column.name)} class="hover:text-white">
+						<a href={sortHref(column.name)} class="hover:text-ink">
 							{column.name}
 							{#if data.sort === column.name}{data.dir === 'asc' ? '\u2191' : '\u2193'}{/if}
 						</a>
@@ -61,11 +59,11 @@
 				{/if}
 			</tr>
 		</thead>
-		<tbody class="divide-y divide-neutral-800">
+		<tbody class="divide-y divide-edge">
 			{#each data.rows as row (row.pk)}
-				<tr class="hover:bg-neutral-900">
+				<tr class="hover:bg-panel">
 					{#each data.table.columns as column (column.name)}
-						<td class="max-w-xs truncate px-4 py-2 text-neutral-200">
+						<td class="max-w-xs truncate px-4 py-2 text-ink">
 							{row.data[column.name] ?? ''}
 						</td>
 					{/each}
@@ -73,7 +71,7 @@
 						<td class="px-4 py-2 text-right">
 							<a
 								href={`/apps/admin/${data.app.slug}/${data.table.name}/${row.pk}`}
-								class="mr-3 text-neutral-400 hover:text-white">Edit</a
+								class="mr-3 text-ink-muted hover:text-ink">Edit</a
 							>
 							<form
 								method="POST"
@@ -85,7 +83,7 @@
 								}}
 							>
 								<input type="hidden" name="pk" value={row.pk} />
-								<button type="submit" class="text-red-400 hover:text-red-300">Delete</button>
+								<button type="submit" class="text-danger hover:text-danger-hover">Delete</button>
 							</form>
 						</td>
 					{/if}
@@ -94,7 +92,7 @@
 
 			{#if data.rows.length === 0}
 				<tr>
-					<td colspan={data.table.columns.length + 1} class="px-4 py-6 text-center text-neutral-500">
+					<td colspan={data.table.columns.length + 1} class="px-4 py-6 text-center text-ink-faint">
 						No rows.
 					</td>
 				</tr>
@@ -104,17 +102,17 @@
 </div>
 
 {#if data.pageCount > 1}
-	<div class="mt-4 flex items-center gap-3 text-sm text-neutral-400">
+	<div class="mt-4 flex items-center gap-3 text-sm text-ink-muted">
 		<a
 			href={pageHref(Math.max(1, data.page - 1))}
 			class:opacity-40={data.page <= 1}
-			class="hover:text-white">Prev</a
+			class="hover:text-ink">Prev</a
 		>
 		<span>Page {data.page} of {data.pageCount} ({data.total} rows)</span>
 		<a
 			href={pageHref(Math.min(data.pageCount, data.page + 1))}
 			class:opacity-40={data.page >= data.pageCount}
-			class="hover:text-white">Next</a
+			class="hover:text-ink">Next</a
 		>
 	</div>
 {/if}

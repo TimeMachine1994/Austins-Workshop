@@ -26,6 +26,13 @@ export const apps: AppEntry[] = [
 		icon: '🔢'
 	},
 	{
+		slug: 'screenwriter',
+		title: 'Screenwriter',
+		description:
+			'A minimal, keyboard-first screenwriting tool — try the public demo sandbox, or sign up to save your own scripts.',
+		icon: '🎬'
+	},
+	{
 		slug: 'admin',
 		title: 'Admin',
 		description: 'Command center: browse and manage every app\u2019s data.',

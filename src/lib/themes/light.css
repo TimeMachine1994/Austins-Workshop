@@ -1,0 +1,45 @@
+/*
+ * Light theme.
+ *
+ * Defined on bare `:root` (not just [data-theme='light']) so light is the
+ * base fallback for `system` and any unknown value; dark.css overrides it
+ * for [data-theme='dark'] and, via media query, for [data-theme='system']
+ * when the OS prefers dark.
+ */
+:root {
+	color-scheme: light;
+
+	/* Surfaces */
+	--surface: #fafafa; /* page background */
+	--panel: #ffffff; /* cards, nav, modals */
+	--panel-hover: #f5f5f5;
+
+	/* Text */
+	--ink: #171717;
+	--ink-muted: #737373;
+	--ink-faint: #a3a3a3;
+
+	/* Borders */
+	--edge: #e5e5e5;
+	--edge-strong: #a3a3a3;
+
+	/* Accent — deep emerald, the daylight counterpart of the dark theme's phosphor green */
+	--accent: #047857;
+	--accent-hover: #065f46;
+	--on-accent: #ffffff;
+
+	/* Danger */
+	--danger: #dc2626;
+	--danger-hover: #b91c1c;
+	--danger-panel: #fef2f2;
+	--danger-edge: #fecaca;
+
+	/* Warning */
+	--warn: #b45309;
+	--warn-panel: #fffbeb;
+	--warn-edge: #fde68a;
+}
+
+:root[data-theme='system'] {
+	color-scheme: light dark;
+}

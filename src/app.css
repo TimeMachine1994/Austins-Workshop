@@ -1,1 +1,41 @@
 @import 'tailwindcss';
+@import './lib/themes/light.css';
+@import './lib/themes/dark.css';
+
+/*
+ * Semantic design tokens.
+ *
+ * `@theme inline` maps Tailwind color utilities onto the runtime CSS
+ * variables defined by the theme files above, so utilities like
+ * `bg-surface` / `text-ink` / `border-edge` resolve to whatever the active
+ * [data-theme] provides — switching themes never touches components.
+ *
+ * Rule: pages and components use ONLY these semantic utilities, never raw
+ * palette classes (bg-neutral-900, text-red-400, ...). Raw palette values
+ * live exclusively inside src/lib/themes/<id>.css.
+ */
+@theme inline {
+	--color-surface: var(--surface);
+	--color-panel: var(--panel);
+	--color-panel-hover: var(--panel-hover);
+
+	--color-ink: var(--ink);
+	--color-ink-muted: var(--ink-muted);
+	--color-ink-faint: var(--ink-faint);
+
+	--color-edge: var(--edge);
+	--color-edge-strong: var(--edge-strong);
+
+	--color-accent: var(--accent);
+	--color-accent-hover: var(--accent-hover);
+	--color-on-accent: var(--on-accent);
+
+	--color-danger: var(--danger);
+	--color-danger-hover: var(--danger-hover);
+	--color-danger-panel: var(--danger-panel);
+	--color-danger-edge: var(--danger-edge);
+
+	--color-warn: var(--warn);
+	--color-warn-panel: var(--warn-panel);
+	--color-warn-edge: var(--warn-edge);
+}

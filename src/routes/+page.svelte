@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { apps } from '$lib/apps/registry';
-	import AppCard from '$lib/components/AppCard.svelte';
+	import { AppCard } from '$lib/ui';
 </script>
 
-<h1 class="mb-2 text-3xl font-semibold text-white">Mini-App Demos</h1>
-<p class="mb-8 text-neutral-400">
+<h1 class="mb-2 text-3xl font-semibold text-ink">Mini-App Demos</h1>
+<p class="mb-8 text-ink-muted">
 	A portal for "one-and-done" apps, each isolated with its own database.
 </p>
 

@@ -1,36 +1,63 @@
-import type { Handle } from '@sveltejs/kit';
-import {
-	deleteSessionTokenCookie,
-	setSessionTokenCookie,
-	validateSessionToken
-} from '$lib/apps/admin/auth/session';
-import { SESSION_COOKIE_NAME } from '$lib/apps/admin/auth/constants';
+import type { Handle, RequestEvent } from '@sveltejs/kit';
+import * as adminAuth from '$lib/apps/admin/auth/session';
+import { SESSION_COOKIE_NAME as ADMIN_SESSION_COOKIE } from '$lib/apps/admin/auth/constants';
+import * as swAuth from '$lib/apps/screenwriter/auth/session';
+import { SESSION_COOKIE_NAME as SW_SESSION_COOKIE } from '$lib/apps/screenwriter/auth/constants';
+import { DEFAULT_THEME, THEME_COOKIE_NAME, isThemeId } from '$lib/themes/registry';
 
 /**
- * Only the admin app has auth. For every other route, locals.user/session stay null
- * and no session lookup happens.
+ * Per-app auth: admin and screenwriter each validate their own session cookie
+ * against their own database, only for requests under their own path prefix.
+ * Every other route skips session lookups entirely.
+ *
+ * The theme cookie is read for every request so the server can inject
+ * data-theme onto <html> (see src/app.html's %theme% placeholder) — this is
+ * what makes SSR pages arrive already themed, with no flash of wrong theme.
  */
-export const handle: Handle = async ({ event, resolve }) => {
-	event.locals.user = null;
-	event.locals.session = null;
 
-	if (!event.url.pathname.startsWith('/apps/admin')) {
-		return resolve(event);
-	}
+async function resolveAdminSession(event: RequestEvent): Promise<void> {
+	const token = event.cookies.get(ADMIN_SESSION_COOKIE);
+	if (!token) return;
 
-	const token = event.cookies.get(SESSION_COOKIE_NAME);
-	if (!token) {
-		return resolve(event);
-	}
-
-	const { session, user } = await validateSessionToken(token);
+	const { session, user } = await adminAuth.validateSessionToken(token);
 	if (session && user) {
 		event.locals.session = session;
 		event.locals.user = user;
-		setSessionTokenCookie(event.cookies, token, session.expiresAt);
+		adminAuth.setSessionTokenCookie(event.cookies, token, session.expiresAt);
 	} else {
-		deleteSessionTokenCookie(event.cookies);
+		adminAuth.deleteSessionTokenCookie(event.cookies);
+	}
+}
+
+async function resolveScreenwriterSession(event: RequestEvent): Promise<void> {
+	const token = event.cookies.get(SW_SESSION_COOKIE);
+	if (!token) return;
+
+	const { session, user } = await swAuth.validateSessionToken(token);
+	if (session && user) {
+		event.locals.screenwriter = { session, user };
+		swAuth.setSessionTokenCookie(event.cookies, token, session.expiresAt);
+	} else {
+		swAuth.deleteSessionTokenCookie(event.cookies);
+	}
+}
+
+export const handle: Handle = async ({ event, resolve }) => {
+	const themeCookie = event.cookies.get(THEME_COOKIE_NAME);
+	const theme = themeCookie && isThemeId(themeCookie) ? themeCookie : DEFAULT_THEME;
+	event.locals.theme = theme;
+
+	event.locals.user = null;
+	event.locals.session = null;
+	event.locals.screenwriter = { user: null, session: null };
+
+	if (event.url.pathname.startsWith('/apps/admin')) {
+		await resolveAdminSession(event);
+	} else if (event.url.pathname.startsWith('/apps/screenwriter')) {
+		await resolveScreenwriterSession(event);
 	}
 
-	return resolve(event);
+	return resolve(event, {
+		transformPageChunk: ({ html }) => html.replace('%theme%', theme)
+	});
 };
