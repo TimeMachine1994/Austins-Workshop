@@ -2,7 +2,7 @@
  * Template drizzle-kit config for a new app module.
  * Copy this file into src/lib/apps/<slug>/drizzle.config.ts and replace <slug>.
  *
- * See docs/adding-a-new-app.md for the full walkthrough.
+ * See docs/app-lifecycle.md for the full walkthrough.
  */
 import { defineConfig } from 'drizzle-kit';
 

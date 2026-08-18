@@ -6,7 +6,7 @@
  *   2. Add its routes under src/routes/apps/<slug>/
  *   3. Add one entry below.
  *
- * See docs/adding-a-new-app.md for the full step-by-step guide.
+ * See docs/app-lifecycle.md for the full step-by-step guide.
  */
 export type AppEntry = {
 	slug: string;
