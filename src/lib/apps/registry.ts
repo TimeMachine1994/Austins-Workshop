@@ -33,6 +33,13 @@ export const apps: AppEntry[] = [
 		icon: '🎬'
 	},
 	{
+		slug: 'slideshow',
+		title: 'Slideshows',
+		description:
+			'Create photo slideshows with YouTube-synced music, share them with a custom link, and let friends submit photos for your approval.',
+		icon: '🎞️'
+	},
+	{
 		slug: 'gallery',
 		title: 'Gallery',
 		description: 'Living reference of every component in the $lib/ui library, rendered under the active theme.',

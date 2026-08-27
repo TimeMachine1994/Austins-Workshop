@@ -25,3 +25,6 @@ vite.config.ts.timestamp-*
 # Per-app local databases
 /data/*.db
 /data/*.db-*
+
+# Slideshow app photo uploads
+/data/slideshow-uploads/

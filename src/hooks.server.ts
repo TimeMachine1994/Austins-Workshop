@@ -3,6 +3,8 @@ import * as adminAuth from '$lib/apps/admin/auth/session';
 import { SESSION_COOKIE_NAME as ADMIN_SESSION_COOKIE } from '$lib/apps/admin/auth/constants';
 import * as swAuth from '$lib/apps/screenwriter/auth/session';
 import { SESSION_COOKIE_NAME as SW_SESSION_COOKIE } from '$lib/apps/screenwriter/auth/constants';
+import * as ssAuth from '$lib/apps/slideshow/auth/session';
+import { SESSION_COOKIE_NAME as SS_SESSION_COOKIE } from '$lib/apps/slideshow/auth/constants';
 import { DEFAULT_THEME, THEME_COOKIE_NAME, isThemeId } from '$lib/themes/registry';
 
 /**
@@ -42,6 +44,19 @@ async function resolveScreenwriterSession(event: RequestEvent): Promise<void> {
 	}
 }
 
+async function resolveSlideshowSession(event: RequestEvent): Promise<void> {
+	const token = event.cookies.get(SS_SESSION_COOKIE);
+	if (!token) return;
+
+	const { session, user } = await ssAuth.validateSessionToken(token);
+	if (session && user) {
+		event.locals.slideshow = { session, user };
+		ssAuth.setSessionTokenCookie(event.cookies, token, session.expiresAt);
+	} else {
+		ssAuth.deleteSessionTokenCookie(event.cookies);
+	}
+}
+
 export const handle: Handle = async ({ event, resolve }) => {
 	const themeCookie = event.cookies.get(THEME_COOKIE_NAME);
 	const theme = themeCookie && isThemeId(themeCookie) ? themeCookie : DEFAULT_THEME;
@@ -50,11 +65,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.user = null;
 	event.locals.session = null;
 	event.locals.screenwriter = { user: null, session: null };
+	event.locals.slideshow = { user: null, session: null };
 
 	if (event.url.pathname.startsWith('/apps/admin')) {
 		await resolveAdminSession(event);
 	} else if (event.url.pathname.startsWith('/apps/screenwriter')) {
 		await resolveScreenwriterSession(event);
+	} else if (event.url.pathname.startsWith('/apps/slideshow')) {
+		await resolveSlideshowSession(event);
 	}
 
 	return resolve(event, {

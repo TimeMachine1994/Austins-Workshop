@@ -14,6 +14,11 @@ declare global {
 				user: { id: string; username: string } | null;
 				session: { id: string; expiresAt: Date } | null;
 			};
+			/** Populated by hooks.server.ts for requests under /apps/slideshow. */
+			slideshow: {
+				user: { id: string; username: string } | null;
+				session: { id: string; expiresAt: Date } | null;
+			};
 			/** Active theme resolved from the theme cookie (defaults to 'system'). */
 			theme: ThemeId;
 		}
