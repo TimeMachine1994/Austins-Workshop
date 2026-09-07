@@ -1,4 +1,4 @@
-CREATE TABLE `documents` (
+CREATE TABLE `screenwriter_documents` (
 	`id` text PRIMARY KEY NOT NULL,
 	`owner_id` text,
 	`title` text NOT NULL,
@@ -6,21 +6,21 @@ CREATE TABLE `documents` (
 	`elements` text NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
-	FOREIGN KEY (`owner_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`owner_id`) REFERENCES `screenwriter_users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `sessions` (
+CREATE TABLE `screenwriter_sessions` (
 	`id` text PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
 	`expires_at` integer NOT NULL,
-	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`user_id`) REFERENCES `screenwriter_users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `users` (
+CREATE TABLE `screenwriter_users` (
 	`id` text PRIMARY KEY NOT NULL,
 	`username` text NOT NULL,
 	`password_hash` text NOT NULL,
 	`created_at` text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `users_username_unique` ON `users` (`username`);
+CREATE UNIQUE INDEX `screenwriter_users_username_unique` ON `screenwriter_users` (`username`);

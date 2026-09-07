@@ -3,16 +3,15 @@ import { drizzle } from 'drizzle-orm/libsql';
 import * as schema from './schema';
 
 /**
- * Each app owns its own libSQL connection + database file.
+ * All apps share one libSQL database. Each app's tables are prefixed with
+ * its slug (e.g. "screenwriter_...") so they never collide with another app's.
  *
- * Local dev: points at a file under data/<slug>.db.
- * Turso later: set env vars below instead of the file: url, no code changes needed.
- *   url: process.env.SCREENWRITER_DATABASE_URL,
- *   authToken: process.env.SCREENWRITER_AUTH_TOKEN
+ * Local dev: points at a single file under data/workshop.db.
+ * Turso: set URL / TURSO_KEY, no code changes needed.
  */
 const client = createClient({
-	url: process.env.SCREENWRITER_DATABASE_URL ?? 'file:data/screenwriter.db',
-	authToken: process.env.SCREENWRITER_AUTH_TOKEN
+	url: process.env.URL ?? 'file:data/workshop.db',
+	authToken: process.env.TURSO_KEY
 });
 
 export const db = drizzle(client, { schema });

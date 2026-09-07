@@ -1,6 +1,6 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
-export const users = sqliteTable('users', {
+export const users = sqliteTable('screenwriter_users', {
 	id: text('id').primaryKey(),
 	username: text('username').notNull().unique(),
 	passwordHash: text('password_hash').notNull(),
@@ -9,7 +9,7 @@ export const users = sqliteTable('users', {
 		.default('CURRENT_TIMESTAMP')
 });
 
-export const sessions = sqliteTable('sessions', {
+export const sessions = sqliteTable('screenwriter_sessions', {
 	id: text('id').primaryKey(), // sha256 hash of the session token
 	userId: text('user_id')
 		.notNull()
@@ -17,7 +17,7 @@ export const sessions = sqliteTable('sessions', {
 	expiresAt: integer('expires_at').notNull() // unix seconds
 });
 
-export const documents = sqliteTable('documents', {
+export const documents = sqliteTable('screenwriter_documents', {
 	id: text('id').primaryKey(),
 	/** NULL = public demo sandbox document, editable/deletable by anyone. */
 	ownerId: text('owner_id').references(() => users.id),

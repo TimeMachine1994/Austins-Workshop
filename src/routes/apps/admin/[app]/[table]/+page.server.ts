@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 	if (!vdb) throw error(404, `No such app "${params.app}"`);
 
 	const client = await vdb.getClient();
-	const table = await getTableInfo(client, params.table);
+	const table = await getTableInfo(client, params.table, vdb.slug);
 
 	const page = Number.parseInt(url.searchParams.get('page') ?? '1', 10) || 1;
 	const sort = url.searchParams.get('sort') ?? undefined;
@@ -35,7 +35,7 @@ export const actions: Actions = {
 		if (!vdb) throw error(404, `No such app "${params.app}"`);
 
 		const client = await vdb.getClient();
-		const table = await getTableInfo(client, params.table);
+		const table = await getTableInfo(client, params.table, vdb.slug);
 
 		if (table.hasCompositeKey) {
 			return fail(400, { error: 'Cannot delete rows from a table with a composite primary key.' });

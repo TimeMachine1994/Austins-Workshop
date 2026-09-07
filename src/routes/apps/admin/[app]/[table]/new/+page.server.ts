@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	if (!vdb) throw error(404, `No such app "${params.app}"`);
 
 	const client = await vdb.getClient();
-	const table = await getTableInfo(client, params.table);
+	const table = await getTableInfo(client, params.table, vdb.slug);
 
 	if (table.hasCompositeKey) {
 		throw error(400, 'Cannot create rows in a table with a composite primary key.');
@@ -24,7 +24,7 @@ export const actions: Actions = {
 		if (!vdb) throw error(404, `No such app "${params.app}"`);
 
 		const client = await vdb.getClient();
-		const table = await getTableInfo(client, params.table);
+		const table = await getTableInfo(client, params.table, vdb.slug);
 
 		const form = await request.formData();
 		const values: Record<string, unknown> = {};

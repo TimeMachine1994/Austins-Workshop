@@ -1,6 +1,6 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
-export const users = sqliteTable('users', {
+export const users = sqliteTable('slideshow_users', {
 	id: text('id').primaryKey(),
 	username: text('username').notNull().unique(),
 	passwordHash: text('password_hash').notNull(),
@@ -9,7 +9,7 @@ export const users = sqliteTable('users', {
 		.default('CURRENT_TIMESTAMP')
 });
 
-export const sessions = sqliteTable('sessions', {
+export const sessions = sqliteTable('slideshow_sessions', {
 	id: text('id').primaryKey(), // sha256 hash of the session token
 	userId: text('user_id')
 		.notNull()
@@ -17,7 +17,7 @@ export const sessions = sqliteTable('sessions', {
 	expiresAt: integer('expires_at').notNull() // unix seconds
 });
 
-export const slideshows = sqliteTable('slideshows', {
+export const slideshows = sqliteTable('slideshow_slideshows', {
 	id: text('id').primaryKey(),
 	ownerId: text('owner_id')
 		.notNull()
@@ -33,7 +33,7 @@ export const slideshows = sqliteTable('slideshows', {
 	updatedAt: integer('updated_at').notNull() // unix ms
 });
 
-export const photos = sqliteTable('photos', {
+export const photos = sqliteTable('slideshow_photos', {
 	id: text('id').primaryKey(),
 	slideshowId: text('slideshow_id')
 		.notNull()

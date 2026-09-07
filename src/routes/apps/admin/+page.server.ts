@@ -8,7 +8,7 @@ export const load: PageServerLoad = async () => {
 	const sections = await Promise.all(
 		virtualDbs.map(async (vdb) => {
 			const client = await vdb.getClient();
-			const tableNames = await listTables(client);
+			const tableNames = await listTables(client, vdb.slug);
 			const tables = await Promise.all(
 				tableNames.map(async (name) => ({ name, rowCount: await countRows(client, name) }))
 			);

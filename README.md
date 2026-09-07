@@ -1,8 +1,8 @@
 # Austin's Workshop
 
 A SvelteKit "mega site" portal for hosting small, self-contained demo apps —
-each app is an isolated module with its own libSQL/Turso database, own
-Drizzle schema, and own routes under `/apps/<slug>`.
+each app is an isolated module with its own Drizzle schema, own routes, and
+(optionally) own auth, all sharing one libSQL/Turso database.
 
 ## Quickstart
 
@@ -11,8 +11,8 @@ npm install
 npm run dev -- --open
 ```
 
-The `counter` example app's database (`data/counter.db`) is already migrated
-and ready to use. Visit `/apps/counter` to try it.
+All apps share a single local database (`data/workshop.db`). Run the
+migrations for each app, then visit `/apps/counter` to try the example app.
 
 ## Architecture
 
@@ -23,8 +23,9 @@ and ready to use. Visit `/apps/counter` to try it.
 - **Per-app isolation**: every mini-app lives in `src/lib/apps/<slug>/` with
   its own Drizzle schema (`db/schema.ts`), its own libSQL client
   (`db/client.ts`), and its own `drizzle.config.ts`/migrations. Apps never
-  share tables or connections — each is backed by its own database file
-  under `data/<slug>.db` (gitignored).
+  share tables or connections — but they share one database, so every table
+  name is prefixed with its app slug (e.g. `screenwriter_users`) to keep
+  apps from colliding.
 - **Routes**: each app's UI lives at `src/routes/apps/<slug>/`.
 
 See `docs/app-lifecycle.md` for the exact steps to install a new mini-app —
@@ -48,16 +49,15 @@ npm run admin:create-user
 ```
 
 This prompts for a username/password on stdin and stores a scrypt-hashed
-password in its own `data/admin.db` — there is no public signup page.
+password in the shared database's `admin_users` table — there is no public
+signup page.
 
-## Database: local libSQL now, Turso later
+## Database: local libSQL now, Turso in production
 
-Locally, each app's `db/client.ts` points at a local file
-(`file:data/<slug>.db`). When ready to go live, create a Turso database per
-app and set that app's `<SLUG>_DATABASE_URL` / `<SLUG>_AUTH_TOKEN` env vars
-(e.g. `COUNTER_DATABASE_URL`, `SCREENWRITER_DATABASE_URL`, ...) —
-`db/client.ts` already reads from `process.env` first, so **no code changes**
-are needed to switch from local dev to Turso.
+Locally, every app's `db/client.ts` points at the same local file
+(`file:data/workshop.db`). To go live, create one Turso database and set
+`URL` / `TURSO_KEY` — `db/client.ts` already reads from `process.env`
+first, so **no code changes** are needed to switch from local dev to Turso.
 
 ## Building
 

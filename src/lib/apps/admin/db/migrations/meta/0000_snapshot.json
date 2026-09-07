@@ -1,11 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "205204ea-c584-4d30-b955-bd7bf5346099",
+  "id": "357c10a3-ecb6-4be7-974c-5f34e14d49ed",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "sessions": {
-      "name": "sessions",
+    "admin_sessions": {
+      "name": "admin_sessions",
       "columns": {
         "id": {
           "name": "id",
@@ -31,10 +31,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "sessions_user_id_users_id_fk": {
-          "name": "sessions_user_id_users_id_fk",
-          "tableFrom": "sessions",
-          "tableTo": "users",
+        "admin_sessions_user_id_admin_users_id_fk": {
+          "name": "admin_sessions_user_id_admin_users_id_fk",
+          "tableFrom": "admin_sessions",
+          "tableTo": "admin_users",
           "columnsFrom": [
             "user_id"
           ],
@@ -49,8 +49,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "users": {
-      "name": "users",
+    "admin_users": {
+      "name": "admin_users",
       "columns": {
         "id": {
           "name": "id",
@@ -83,8 +83,8 @@
         }
       },
       "indexes": {
-        "users_username_unique": {
-          "name": "users_username_unique",
+        "admin_users_username_unique": {
+          "name": "admin_users_username_unique",
           "columns": [
             "username"
           ],

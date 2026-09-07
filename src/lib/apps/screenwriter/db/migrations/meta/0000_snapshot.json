@@ -1,11 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "d2cc0f8c-f029-4c14-9382-2d3fabf32e36",
+  "id": "3ae31df1-fc7d-4687-b499-727c09aba5d7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "documents": {
-      "name": "documents",
+    "screenwriter_documents": {
+      "name": "screenwriter_documents",
       "columns": {
         "id": {
           "name": "id",
@@ -59,10 +59,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "documents_owner_id_users_id_fk": {
-          "name": "documents_owner_id_users_id_fk",
-          "tableFrom": "documents",
-          "tableTo": "users",
+        "screenwriter_documents_owner_id_screenwriter_users_id_fk": {
+          "name": "screenwriter_documents_owner_id_screenwriter_users_id_fk",
+          "tableFrom": "screenwriter_documents",
+          "tableTo": "screenwriter_users",
           "columnsFrom": [
             "owner_id"
           ],
@@ -77,8 +77,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "sessions": {
-      "name": "sessions",
+    "screenwriter_sessions": {
+      "name": "screenwriter_sessions",
       "columns": {
         "id": {
           "name": "id",
@@ -104,10 +104,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "sessions_user_id_users_id_fk": {
-          "name": "sessions_user_id_users_id_fk",
-          "tableFrom": "sessions",
-          "tableTo": "users",
+        "screenwriter_sessions_user_id_screenwriter_users_id_fk": {
+          "name": "screenwriter_sessions_user_id_screenwriter_users_id_fk",
+          "tableFrom": "screenwriter_sessions",
+          "tableTo": "screenwriter_users",
           "columnsFrom": [
             "user_id"
           ],
@@ -122,8 +122,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "users": {
-      "name": "users",
+    "screenwriter_users": {
+      "name": "screenwriter_users",
       "columns": {
         "id": {
           "name": "id",
@@ -156,8 +156,8 @@
         }
       },
       "indexes": {
-        "users_username_unique": {
-          "name": "users_username_unique",
+        "screenwriter_users_username_unique": {
+          "name": "screenwriter_users_username_unique",
           "columns": [
             "username"
           ],

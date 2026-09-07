@@ -1,9 +1,10 @@
 # App Lifecycle: Installing & Uninstalling Mini-Apps
 
-Each mini-app is a fully isolated module: its own database file, its own
-Drizzle schema/migrations, its own routes, and (optionally) its own auth and
-its own contributions to the shared component library. Because everything an
-app owns lives in a small, predictable set of locations, **installing and
+Each mini-app is a fully isolated module: its own Drizzle schema/migrations,
+its own routes, and (optionally) its own auth and its own contributions to the
+shared component library — but all apps share one database (local
+`data/workshop.db`, or Turso via `URL`/`TURSO_KEY`). Because everything
+an app owns lives in a small, predictable set of locations, **installing and
 uninstalling are mirror images of each other** — the uninstall checklist is
 the install checklist run in reverse.
 
@@ -20,10 +21,10 @@ Everything an app called `<slug>` may own, and nothing else:
 | `src/lib/apps/<slug>/` | module: `db/` (schema, client, migrations), `drizzle.config.ts`, optional `auth/`, optional app-internal components | yes |
 | `src/routes/apps/<slug>/` | all pages + API endpoints | yes |
 | one entry in `src/lib/apps/registry.ts` | homepage/nav/admin discovery | yes |
-| `data/<slug>.db` (gitignored) | local database file | if the app has a db |
+| `data/workshop.db` (gitignored) | the shared local database file | if the app has a db |
 | one branch in `src/hooks.server.ts` + one field in `src/app.d.ts` | session validation → `locals.<slug>` | only if the app has auth |
 | `src/lib/ui/<slug>/` + entries in `src/lib/ui/catalog.ts` + demos in `src/routes/apps/gallery/+page.svelte` | reusable components extracted from the app | only if extracted |
-| `<SLUG>_DATABASE_URL` / `<SLUG>_AUTH_TOKEN` env vars | Turso, production | only when deployed |
+| `URL` / `TURSO_KEY` env vars | shared Turso database, production | only when deployed |
 
 Rules that keep this clean:
 
@@ -58,16 +59,15 @@ signup/login pages).
 ## 2. Define the schema
 
 Edit `src/lib/apps/todo/db/schema.ts` using `drizzle-orm/sqlite-core` — define
-only tables this app needs. Never import another app's schema; each app's
-tables live in their own database file, so there's nothing to share.
+only tables this app needs. Never import another app's schema. Because all
+apps share one database, **prefix every table name with `<slug>_`** (e.g.
+`todo_items`), unless the table name is already globally unique.
 
 ## 3. Wire up the client
 
-Copy `src/lib/apps/counter/db/client.ts` and update:
-
-- the `file:data/todo.db` path
-- the env var names (`TODO_DATABASE_URL`, `TODO_AUTH_TOKEN`) for the future
-  Turso swap
+Copy `src/lib/apps/counter/db/client.ts` as-is — it already points at the
+shared database (`file:data/workshop.db` locally, or `URL`/`TURSO_KEY`
+for Turso). No per-app edits needed.
 
 ## 4. Add the drizzle-kit config
 
@@ -81,7 +81,9 @@ npx drizzle-kit generate --config=src/lib/apps/todo/drizzle.config.ts
 npx drizzle-kit migrate --config=src/lib/apps/todo/drizzle.config.ts
 ```
 
-This creates `data/todo.db` and applies the schema.
+This applies the schema to the shared `data/workshop.db`, tracking the
+migration in the `todo_drizzle_migrations` table so apps don't step on each
+other's migrations.
 
 ## 6. Add routes
 
@@ -145,9 +147,10 @@ Then click through: homepage tile, the app itself, and its tables in
 
 The same steps in reverse. Work top-down so nothing dangles mid-way.
 
-> **Before you start:** the database file is the only part that isn't in git.
-> If any of its data matters, export it first (e.g. sqlite dump of
-> `data/<slug>.db`, or the app's own export features).
+> **Before you start:** the database is the only part that isn't in git, and
+> it's shared with every other app. If any of the app's data matters, export
+> it first (e.g. a sqlite dump filtered to the app's `<slug>_`-prefixed
+> tables, or the app's own export features).
 
 ## 1. Unregister
 
@@ -183,14 +186,19 @@ rm -rf src/lib/apps/<slug>/
 
 (This removes the schema, client, migrations, and drizzle config in one go.)
 
-## 6. Delete the database
+## 6. Delete the app's tables
 
-```bash
-rm -f data/<slug>.db data/<slug>.db-*
+The database is shared, so don't delete the file — drop only this app's
+`<slug>_`-prefixed tables:
+
+```sql
+-- list them first
+SELECT name FROM sqlite_master
+WHERE type = 'table' AND (name = '<slug>' OR name LIKE '<slug>\_%') ESCAPE '\';
 ```
 
-If deployed: also delete the Turso database and remove the
-`<SLUG>_DATABASE_URL` / `<SLUG>_AUTH_TOKEN` env vars from the host.
+If deployed: drop the same tables from Turso. Leave `URL` / `TURSO_KEY`
+alone — every other app still uses them.
 
 ## 7. Verify a clean removal
 
@@ -206,11 +214,19 @@ trace.
 
 ---
 
-## Later: swapping to Turso
+## Later: deploying to Turso
 
-When ready to take an app's database remote:
+All apps share one database, so this is a one-time site-wide switch:
 
-1. Create a Turso database (`turso db create <slug>`).
-2. Set `<SLUG>_DATABASE_URL` and `<SLUG>_AUTH_TOKEN` env vars (e.g. via `.env`).
-3. No code changes — `db/client.ts` already reads from `process.env` and falls
-   back to the local file only when those vars are unset.
+1. Create one Turso database (`turso db create workshop`).
+2. Set `URL` and `TURSO_KEY` env vars (e.g. via `.env`, and in Vercel).
+3. Run every app's migrations against it:
+   ```bash
+   for slug in admin counter screenwriter slideshow; do
+     npx drizzle-kit migrate --config=src/lib/apps/$slug/drizzle.config.ts
+   done
+   ```
+4. Recreate the admin user (`npm run admin:create-user`) against Turso.
+
+No code changes — every `db/client.ts` already reads `URL`/`TURSO_KEY`
+and falls back to the local file only when they're unset.

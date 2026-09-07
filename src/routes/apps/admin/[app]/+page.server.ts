@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	if (!vdb) throw error(404, `No such app "${params.app}"`);
 
 	const client = await vdb.getClient();
-	const tableNames = await listTables(client);
+	const tableNames = await listTables(client, vdb.slug);
 	const tables = await Promise.all(
 		tableNames.map(async (name) => ({ name, rowCount: await countRows(client, name) }))
 	);

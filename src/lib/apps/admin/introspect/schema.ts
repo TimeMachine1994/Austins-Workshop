@@ -21,18 +21,29 @@ export type TableInfo = {
 /** Tables SQLite/drizzle-kit create for bookkeeping -- never shown in the browser. */
 const INTERNAL_TABLES = new Set(['__drizzle_migrations', 'sqlite_sequence']);
 
-export async function listTables(client: Client): Promise<string[]> {
+/**
+ * A table belongs to an app if it is exactly the app's slug (e.g. `counter`)
+ * or prefixed with "<slug>_" (e.g. `screenwriter_documents`). Every app's
+ * tables are named that way because all apps share one database.
+ */
+function tableBelongsToApp(slug: string, name: string): boolean {
+	return name === slug || name.startsWith(`${slug}_`);
+}
+
+export async function listTables(client: Client, appSlug?: string): Promise<string[]> {
 	const result = await client.execute(
 		"SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"
 	);
 	return result.rows
 		.map((row) => String(row.name))
 		.filter((name) => !INTERNAL_TABLES.has(name))
+		.filter((name) => !name.endsWith('_drizzle_migrations'))
+		.filter((name) => (appSlug ? tableBelongsToApp(appSlug, name) : true))
 		.sort();
 }
 
-export async function getTableInfo(client: Client, table: string): Promise<TableInfo> {
-	const tables = await listTables(client);
+export async function getTableInfo(client: Client, table: string, appSlug?: string): Promise<TableInfo> {
+	const tables = await listTables(client, appSlug);
 	if (!tables.includes(table)) {
 		throw new Error(`Unknown table "${table}"`);
 	}
