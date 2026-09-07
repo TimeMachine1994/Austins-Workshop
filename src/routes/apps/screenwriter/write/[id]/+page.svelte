@@ -4,7 +4,7 @@
 	import Editor from '$lib/apps/screenwriter/editor/Editor.svelte';
 	import TitlePage from '$lib/apps/screenwriter/editor/TitlePage.svelte';
 	import { getDocument, getDocumentUpdatedAt, saveDocument } from '$lib/apps/screenwriter/storage/api';
-	import { exportDocument } from '$lib/apps/screenwriter/storage/fileIO';
+	import { exportDocument, exportDocumentAsPDF } from '$lib/apps/screenwriter/storage/fileIO';
 	import KeyboardHelpModal from '$lib/ui/screenwriter/KeyboardHelpModal.svelte';
 	import Toast from '$lib/ui/screenwriter/Toast.svelte';
 	import type { PageProps } from './$types';
@@ -28,6 +28,7 @@
 	let saveStatus = $state<'saved' | 'saving' | 'idle'>('idle');
 	let showHelp = $state(false);
 	let syncToastVisible = $state(false);
+	let isExportingPDF = $state(false);
 
 	let saveTimeout: ReturnType<typeof setTimeout> | undefined;
 	let syncToastTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -102,6 +103,17 @@
 		await exportDocument($state.snapshot(docState.doc));
 	}
 
+	async function handleExportPDF() {
+		isExportingPDF = true;
+		try {
+			await exportDocumentAsPDF($state.snapshot(docState.doc));
+		} catch (err) {
+			console.error('Failed to export PDF:', err);
+		} finally {
+			isExportingPDF = false;
+		}
+	}
+
 	function handleKeydown(e: KeyboardEvent) {
 		if (
 			e.key === '?' &&
@@ -143,6 +155,9 @@
 			{/if}
 			<span>{saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved' : ''}</span>
 			<button onclick={handleExport} class="hover:text-ink">Export JSON</button>
+			<button onclick={handleExportPDF} class="hover:text-ink" disabled={isExportingPDF}>
+				{isExportingPDF ? 'Exporting PDF…' : 'Export PDF'}
+			</button>
 			<button onclick={() => (showHelp = true)} class="hover:text-ink" aria-label="Keyboard shortcuts">?</button>
 		</div>
 	</header>
